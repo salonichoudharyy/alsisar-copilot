@@ -1,0 +1,2292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alsisar Impact Co-Pilot</title>
+    <style>
+      :root {
+        --purple-900: #000000;
+        --purple-800: #1a0505;
+        --purple-700: #6b0e0a;
+        --purple-600: #8d1812;
+        --purple-500: #8d1812;
+        --purple-400: #c17f6c;
+        --purple-300: #c17f6c;
+        --purple-200: #ddd4c4;
+        --purple-100: #a3d39d;
+        --purple-50: #eef6ec;
+        --white: #ffffff;
+        --gray-50: #f5f0e8;
+        --gray-100: #ede8de;
+        --gray-200: #e0d8cc;
+        --gray-300: #c8bfb0;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-700: #374151;
+        --gray-900: #111827;
+        --green-500: #3d7749;
+        --red-500: #ef4444;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg:
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl:
+          0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --radius: 12px;
+        --radius-sm: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--gray-50);
+        color: var(--gray-900);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      /* ── Header ── */
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--purple-900) 0%,
+          var(--purple-700) 100%
+        );
+        padding: 0 32px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+
+      .logo-icon {
+        height: 36px;
+        width: auto;
+        display: flex;
+        align-items: center;
+      }
+
+      .logo-icon img {
+        height: 36px;
+        width: auto;
+        filter: brightness(0) invert(1);
+      }
+
+      .logo-text {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--white);
+        letter-spacing: -0.3px;
+      }
+
+      .logo-text span {
+        color: var(--purple-300);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .api-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--purple-300);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        padding: 4px 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .api-status:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--gray-400);
+        transition: background 0.3s;
+      }
+
+      .status-dot.connected {
+        background: var(--green-500);
+      }
+
+      /* ── Tab Navigation ── */
+      .tab-nav {
+        background: var(--white);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 0 32px;
+        position: sticky;
+        top: 64px;
+        z-index: 90;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .tab-nav-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        gap: 2px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .tab-nav-inner::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        border: none;
+        background: none;
+        color: var(--gray-500);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        transition: all 0.2s;
+        position: relative;
+        top: 1px;
+      }
+
+      .tab-btn:hover {
+        color: var(--purple-600);
+      }
+
+      .tab-btn.active {
+        color: var(--purple-600);
+        border-bottom-color: var(--purple-500);
+      }
+
+      .tab-icon {
+        font-size: 16px;
+        opacity: 0.85;
+      }
+
+      /* ── Main Content ── */
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px;
+      }
+
+      .module {
+        display: none;
+        animation: fadeIn 0.25s ease;
+      }
+
+      .module.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .module-header {
+        margin-bottom: 28px;
+      }
+
+      .module-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--gray-900);
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+      }
+
+      .module-subtitle {
+        font-size: 15px;
+        color: var(--gray-500);
+        max-width: 600px;
+      }
+
+      /* ── Cards ── */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 28px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .card + .card {
+        margin-top: 20px;
+      }
+
+      .card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .card-title-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--purple-100);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+      }
+
+      /* ── Two-column layout ── */
+      .two-col {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      @media (max-width: 900px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Form Elements ── */
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      .form-group:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gray-700);
+        margin-bottom: 6px;
+        letter-spacing: 0.1px;
+      }
+
+      label .hint {
+        font-weight: 400;
+        color: var(--gray-400);
+        font-size: 12px;
+        margin-left: 4px;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="number"],
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        color: var(--gray-900);
+        background: var(--white);
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        font-family: inherit;
+        line-height: 1.5;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--purple-500);
+        box-shadow: 0 0 0 3px rgba(141, 24, 18, 0.12);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 90px;
+      }
+
+      select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+      }
+
+      /* ── Buttons ── */
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 22px;
+        background: linear-gradient(
+          135deg,
+          var(--purple-600),
+          var(--purple-500)
+        );
+        color: var(--white);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(141, 24, 18, 0.35);
+        width: 100%;
+        justify-content: center;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(
+          135deg,
+          var(--purple-700),
+          var(--purple-600)
+        );
+        box-shadow: 0 4px 14px rgba(141, 24, 18, 0.45);
+        transform: translateY(-1px);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--white);
+        color: var(--purple-600);
+        border: 1.5px solid var(--purple-300);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-secondary:hover {
+        background: var(--purple-50);
+        border-color: var(--purple-500);
+      }
+
+      .generate-btn {
+        margin-top: 20px;
+      }
+
+      /* ── Result Panel ── */
+      .result-panel {
+        background: var(--gray-50);
+        border: 1.5px solid var(--gray-200);
+        border-radius: var(--radius);
+        padding: 24px;
+        min-height: 200px;
+        position: relative;
+      }
+
+      .result-panel.has-content {
+        background: var(--white);
+        border-color: var(--purple-200);
+      }
+
+      .result-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 180px;
+        color: var(--gray-400);
+        text-align: center;
+        gap: 12px;
+      }
+
+      .result-placeholder-icon {
+        font-size: 36px;
+        opacity: 0.5;
+      }
+      .result-placeholder-text {
+        font-size: 14px;
+      }
+
+      .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .result-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--purple-500);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .result-label::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--purple-500);
+      }
+
+      .result-content {
+        font-size: 14px;
+        color: var(--gray-700);
+        line-height: 1.75;
+        white-space: pre-wrap;
+      }
+
+      .result-content h1,
+      .result-content h2,
+      .result-content h3 {
+        color: var(--gray-900);
+        margin: 16px 0 8px;
+        font-weight: 700;
+      }
+
+      .result-content h1 {
+        font-size: 18px;
+      }
+      .result-content h2 {
+        font-size: 16px;
+      }
+      .result-content h3 {
+        font-size: 14px;
+      }
+
+      .result-content ul,
+      .result-content ol {
+        padding-left: 20px;
+        margin: 8px 0;
+      }
+
+      .result-content li {
+        margin-bottom: 4px;
+      }
+
+      .result-content strong {
+        color: var(--gray-900);
+        font-weight: 600;
+      }
+
+      .result-content code {
+        background: var(--purple-50);
+        color: var(--purple-700);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-family: "Courier New", monospace;
+      }
+
+      /* ── Loading ── */
+      .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 180px;
+        gap: 16px;
+        color: var(--gray-500);
+      }
+
+      .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid var(--purple-100);
+        border-top-color: var(--purple-500);
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .loading-subtext {
+        font-size: 12px;
+        color: var(--gray-400);
+      }
+
+      /* ── Error ── */
+      .error-banner {
+        background: #fef2f2;
+        border: 1.5px solid #fecaca;
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #dc2626;
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-top: 12px;
+      }
+
+      .error-banner svg {
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* ── API Key Modal ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .modal-overlay.hidden {
+        display: none;
+      }
+
+      .modal {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 36px;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .modal-logo {
+        height: 48px;
+        width: auto;
+        margin-bottom: 20px;
+      }
+
+      .modal-logo img {
+        height: 48px;
+        width: auto;
+      }
+
+      .modal-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 8px;
+        letter-spacing: -0.3px;
+      }
+
+      .modal-desc {
+        font-size: 14px;
+        color: var(--gray-500);
+        margin-bottom: 24px;
+        line-height: 1.65;
+      }
+
+      .modal-desc a {
+        color: var(--purple-600);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .modal-desc a:hover {
+        text-decoration: underline;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .modal-actions .btn-primary {
+        flex: 1;
+      }
+
+      .key-input-wrap {
+        position: relative;
+      }
+
+      .key-input-wrap input {
+        padding-right: 44px;
+      }
+
+      .toggle-visibility {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--gray-400);
+        padding: 4px;
+        font-size: 16px;
+        line-height: 1;
+        transition: color 0.2s;
+      }
+
+      .toggle-visibility:hover {
+        color: var(--gray-600);
+      }
+
+      /* ── Chips / Tag inputs ── */
+      .chip-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        background: var(--purple-100);
+        color: var(--purple-700);
+        border: 1.5px solid var(--purple-200);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+
+      .chip:hover,
+      .chip.selected {
+        background: var(--purple-500);
+        color: var(--white);
+        border-color: var(--purple-500);
+      }
+
+      /* ── Section Divider ── */
+      .section-divider {
+        height: 1px;
+        background: var(--gray-200);
+        margin: 24px 0;
+      }
+
+      /* ── Badge ── */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: var(--purple-100);
+        color: var(--purple-700);
+      }
+
+      /* ── Copy btn ── */
+      .result-actions { display: flex; gap: 6px; }
+
+      .copy-btn, .pdf-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border: 1px solid var(--gray-200);
+        border-radius: 6px;
+        background: var(--white);
+        color: var(--gray-500);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .copy-btn:hover, .pdf-btn:hover {
+        border-color: var(--purple-300);
+        color: var(--purple-600);
+      }
+
+      .copy-btn.copied {
+        border-color: var(--green-500);
+        color: var(--green-500);
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--gray-300);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--gray-400);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        header {
+          padding: 0 16px;
+        }
+        .tab-nav {
+          padding: 0 16px;
+        }
+        main {
+          padding: 20px 16px;
+        }
+        .tab-btn {
+          padding: 12px 12px;
+          font-size: 13px;
+        }
+        .card {
+          padding: 20px;
+        }
+        .modal {
+          padding: 24px;
+        }
+      }
+
+      /* ── Streaming cursor ── */
+      .streaming-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background: var(--purple-500);
+        margin-left: 2px;
+        vertical-align: text-bottom;
+        animation: blink 0.8s step-end infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* ── Tooltip ── */
+      [data-tooltip] {
+        position: relative;
+      }
+
+      [data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--gray-900);
+        color: var(--white);
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 5px;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 999;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ─────────────── PASSWORD MODAL ─────────────── -->
+    <div class="modal-overlay" id="apiModal">
+      <div class="modal">
+        <div class="modal-logo">
+          <img src="/logo.png" alt="Alsisar Impact" />
+        </div>
+        <div class="modal-title">Welcome to Alsisar Impact Co-Pilot</div>
+        <p class="modal-desc">
+          Your AI-powered fundraising co-pilot for impact investing founders.<br /><br />
+          Enter the access password to get started.
+        </p>
+        <div class="form-group">
+          <label>Access Password</label>
+          <div class="key-input-wrap">
+            <input
+              type="password"
+              id="apiKeyInput"
+              placeholder="Enter password..."
+              autocomplete="off"
+            />
+            <button
+              class="toggle-visibility"
+              onclick="toggleKeyVisibility()"
+              id="toggleBtn"
+            >
+              👁
+            </button>
+          </div>
+        </div>
+        <div id="modalError" class="error-banner" style="display: none">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span id="modalErrorText"></span>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" id="loginBtn" onclick="saveApiKey()">
+            <span>Get Started</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────── HEADER ─────────────── -->
+    <header>
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-icon">
+            <img src="/logo.png" alt="Alsisar Impact" />
+          </div>
+          <span class="logo-text">Co-<span>Pilot</span></span>
+        </div>
+        <div class="header-right">
+          <div
+            class="api-status"
+            onclick="showApiModal()"
+            data-tooltip="Click to update API key"
+          >
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">No API Key</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─────────────── TAB NAV ─────────────── -->
+    <nav class="tab-nav">
+      <div class="tab-nav-inner">
+        <button
+          class="tab-btn active"
+          onclick="switchTab('sector')"
+          data-tab="sector"
+        >
+          <span class="tab-icon">🌍</span> Sector Analysis
+        </button>
+        <button
+          class="tab-btn"
+          onclick="switchTab('investor')"
+          data-tab="investor"
+        >
+          <span class="tab-icon">🤝</span> Investor Matching
+        </button>
+        <button
+          class="tab-btn"
+          onclick="switchTab('outreach')"
+          data-tab="outreach"
+        >
+          <span class="tab-icon">✉️</span> Outreach Drafting
+        </button>
+        <button
+          class="tab-btn"
+          onclick="switchTab('financial')"
+          data-tab="financial"
+        >
+          <span class="tab-icon">📊</span> Financial Model
+        </button>
+        <button
+          class="tab-btn"
+          onclick="switchTab('diligence')"
+          data-tab="diligence"
+        >
+          <span class="tab-icon">🔍</span> Due Diligence Prep
+        </button>
+        <button class="tab-btn" onclick="switchTab('pitch')" data-tab="pitch">
+          <span class="tab-icon">🎯</span> Pitch Narrative
+        </button>
+      </div>
+    </nav>
+
+    <!-- ─────────────── MAIN ─────────────── -->
+    <main>
+      <!-- ── MODULE 1: Sector Analysis ── -->
+      <div class="module active" id="mod-sector">
+        <div class="module-header">
+          <div class="module-title">🌍 Sector Analysis</div>
+          <div class="module-subtitle">
+            Get a deep dive into your target impact sector — trends, market
+            size, key players, and investment thesis framing.
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-icon">⚙️</div>
+              Configure Analysis
+            </div>
+            <div class="form-group">
+              <label
+                >Target Sector
+                <span class="hint">e.g. Climate Tech, AgriTech</span></label
+              >
+              <input
+                type="text"
+                id="sector-name"
+                placeholder="e.g. Clean Water Access in Sub-Saharan Africa"
+              />
+            </div>
+            <div class="form-group">
+              <label>Geography Focus</label>
+              <select id="sector-geo">
+                <option value="Global">Global</option>
+                <option value="Sub-Saharan Africa">Sub-Saharan Africa</option>
+                <option value="South & Southeast Asia">
+                  South & Southeast Asia
+                </option>
+                <option value="Latin America">Latin America</option>
+                <option value="MENA">MENA</option>
+                <option value="North America">North America</option>
+                <option value="Europe">Europe</option>
+                <option value="East Asia">East Asia</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Stage of Market</label>
+              <select id="sector-stage">
+                <option value="Emerging">Emerging / Pre-commercial</option>
+                <option value="Growing">Growing / Scale-up</option>
+                <option value="Mature">Mature / Established</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Analysis Depth</label>
+              <div class="chip-group">
+                <span
+                  class="chip selected"
+                  data-group="depth"
+                  onclick="toggleChip(this)"
+                  >Market Size</span
+                >
+                <span
+                  class="chip selected"
+                  data-group="depth"
+                  onclick="toggleChip(this)"
+                  >Key Trends</span
+                >
+                <span
+                  class="chip selected"
+                  data-group="depth"
+                  onclick="toggleChip(this)"
+                  >Competitive Landscape</span
+                >
+                <span class="chip" data-group="depth" onclick="toggleChip(this)"
+                  >Regulatory Context</span
+                >
+                <span class="chip" data-group="depth" onclick="toggleChip(this)"
+                  >Exit Landscape</span
+                >
+                <span class="chip" data-group="depth" onclick="toggleChip(this)"
+                  >SDG Alignment</span
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label
+                >Additional Context <span class="hint">optional</span></label
+              >
+              <textarea
+                id="sector-context"
+                placeholder="Any specific angles, competitors, or questions you want addressed..."
+              ></textarea>
+            </div>
+            <button
+              class="btn-primary generate-btn"
+              onclick="generate('sector')"
+              id="sector-btn"
+            >
+              <span>✨</span><span>Generate Sector Analysis</span>
+            </button>
+          </div>
+          <div>
+            <div class="result-panel" id="sector-result">
+              <div class="result-placeholder">
+                <div class="result-placeholder-icon">🌍</div>
+                <div class="result-placeholder-text">
+                  Fill in the form and click Generate to get your sector
+                  analysis
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODULE 2: Investor Matching ── -->
+      <div class="module" id="mod-investor">
+        <div class="module-header">
+          <div class="module-title">🤝 Investor Matching</div>
+          <div class="module-subtitle">
+            Identify the most aligned investors for your startup based on your
+            stage, sector, and impact thesis.
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-icon">⚙️</div>
+              Your Company Profile
+            </div>
+            <div class="form-group">
+              <label>Company Name</label>
+              <input
+                type="text"
+                id="inv-company"
+                placeholder="e.g. AquaFlow Technologies"
+              />
+            </div>
+            <div class="form-group">
+              <label>One-line Description</label>
+              <input
+                type="text"
+                id="inv-desc"
+                placeholder="e.g. SaaS platform for smallholder irrigation management"
+              />
+            </div>
+            <div class="form-group">
+              <label>Sector & Sub-sector</label>
+              <input
+                type="text"
+                id="inv-sector"
+                placeholder="e.g. AgriTech / Sustainable Agriculture"
+              />
+            </div>
+            <div class="form-group">
+              <label>Current Funding Stage</label>
+              <select id="inv-stage">
+                <option>Pre-seed</option>
+                <option>Seed</option>
+                <option>Series A</option>
+                <option>Series B</option>
+                <option>Series C+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Raise Amount</label>
+              <input type="text" id="inv-raise" placeholder="e.g. $2M" />
+            </div>
+            <div class="form-group">
+              <label>Geography of Operations</label>
+              <input
+                type="text"
+                id="inv-geo"
+                placeholder="e.g. Kenya, Uganda, Tanzania"
+              />
+            </div>
+            <div class="form-group">
+              <label>Impact Metrics / SDG Alignment</label>
+              <textarea
+                id="inv-impact"
+                placeholder="e.g. SDG 2 (Zero Hunger), 30K farmers reached, 40% yield improvement..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Investor Type Preferences</label>
+              <div class="chip-group">
+                <span
+                  class="chip selected"
+                  data-group="invtype"
+                  onclick="toggleChip(this)"
+                  >Impact VCs</span
+                >
+                <span
+                  class="chip"
+                  data-group="invtype"
+                  onclick="toggleChip(this)"
+                  >DFIs</span
+                >
+                <span
+                  class="chip"
+                  data-group="invtype"
+                  onclick="toggleChip(this)"
+                  >Family Offices</span
+                >
+                <span
+                  class="chip"
+                  data-group="invtype"
+                  onclick="toggleChip(this)"
+                  >Foundations</span
+                >
+                <span
+                  class="chip"
+                  data-group="invtype"
+                  onclick="toggleChip(this)"
+                  >Corporate VCs</span
+                >
+                <span
+                  class="chip"
+                  data-group="invtype"
+                  onclick="toggleChip(this)"
+                  >Accelerators</span
+                >
+              </div>
+            </div>
+            <button
+              class="btn-primary generate-btn"
+              onclick="generate('investor')"
+              id="investor-btn"
+            >
+              <span>✨</span><span>Find Matching Investors</span>
+            </button>
+          </div>
+          <div>
+            <div class="result-panel" id="investor-result">
+              <div class="result-placeholder">
+                <div class="result-placeholder-icon">🤝</div>
+                <div class="result-placeholder-text">
+                  Describe your company to find aligned impact investors
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODULE 3: Outreach Drafting ── -->
+      <div class="module" id="mod-outreach">
+        <div class="module-header">
+          <div class="module-title">✉️ Outreach Drafting</div>
+          <div class="module-subtitle">
+            Generate personalized cold outreach emails and LinkedIn messages
+            that resonate with impact investors.
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-icon">⚙️</div>
+              Outreach Details
+            </div>
+            <div class="form-group">
+              <label>Your Name & Company</label>
+              <input
+                type="text"
+                id="out-sender"
+                placeholder="e.g. Sarah Chen, AquaFlow Technologies"
+              />
+            </div>
+            <div class="form-group">
+              <label>Investor / Fund Name</label>
+              <input
+                type="text"
+                id="out-investor"
+                placeholder="e.g. Acumen Fund"
+              />
+            </div>
+            <div class="form-group">
+              <label
+                >Investor's Focus / Portfolio
+                <span class="hint">optional</span></label
+              >
+              <textarea
+                id="out-inv-context"
+                placeholder="e.g. Early-stage AgriTech in East Africa, portfolio includes Apollo Agriculture, M-KOPA..."
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label
+                >Your Company Pitch
+                <span class="hint">2-3 sentences</span></label
+              >
+              <textarea
+                id="out-pitch"
+                placeholder="Brief description of what you do, traction, and impact..."
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Ask / Goal of Outreach</label>
+              <select id="out-goal">
+                <option>Introductory call (30 min)</option>
+                <option>Request for partnership</option>
+                <option>Due diligence meeting</option>
+                <option>Follow-up after intro</option>
+                <option>Re-engagement after silence</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tone</label>
+              <div class="chip-group">
+                <span
+                  class="chip selected"
+                  data-group="tone"
+                  onclick="toggleChip(this, true)"
+                  >Professional</span
+                >
+                <span
+                  class="chip"
+                  data-group="tone"
+                  onclick="toggleChip(this, true)"
+                  >Warm & Personal</span
+                >
+                <span
+                  class="chip"
+                  data-group="tone"
+                  onclick="toggleChip(this, true)"
+                  >Bold & Confident</span
+                >
+                <span
+                  class="chip"
+                  data-group="tone"
+                  onclick="toggleChip(this, true)"
+                  >Concise</span
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Format</label>
+              <div class="chip-group">
+                <span
+                  class="chip selected"
+                  data-group="format"
+                  onclick="toggleChip(this, true)"
+                  >Email</span
+                >
+                <span
+                  class="chip"
+                  data-group="format"
+                  onclick="toggleChip(this, true)"
+                  >LinkedIn Message</span
+                >
+                <span
+                  class="chip"
+                  data-group="format"
+                  onclick="toggleChip(this, true)"
+                  >Both</span
+                >
+              </div>
+            </div>
+            <button
+              class="btn-primary generate-btn"
+              onclick="generate('outreach')"
+              id="outreach-btn"
+            >
+              <span>✨</span><span>Draft Outreach Message</span>
+            </button>
+          </div>
+          <div>
+            <div class="result-panel" id="outreach-result">
+              <div class="result-placeholder">
+                <div class="result-placeholder-icon">✉️</div>
+                <div class="result-placeholder-text">
+                  Fill in the details to generate personalized investor outreach
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODULE 4: Financial Model Builder ── -->
+      <div class="module" id="mod-financial">
+        <div class="module-header">
+          <div class="module-title">📊 Financial Model Builder</div>
+          <div class="module-subtitle">
+            Build a narrative financial model outline with key assumptions,
+            revenue drivers, and projections structure for your raise.
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-icon">⚙️</div>
+              Business Financials
+            </div>
+            <div class="form-group">
+              <label>Business Model</label>
+              <select id="fin-model">
+                <option>SaaS / Subscription</option>
+                <option>Marketplace</option>
+                <option>Product Sales (Hardware)</option>
+                <option>Lending / Financial Services</option>
+                <option>Transaction / Commission</option>
+                <option>Franchise / Licensing</option>
+                <option>Grant + Revenue Hybrid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Current ARR / Monthly Revenue</label>
+              <input
+                type="text"
+                id="fin-revenue"
+                placeholder="e.g. $180K ARR or $15K/month"
+              />
+            </div>
+            <div class="form-group">
+              <label>Customer Segments</label>
+              <input
+                type="text"
+                id="fin-segments"
+                placeholder="e.g. Smallholder farmers, NGOs, Governments"
+              />
+            </div>
+            <div class="form-group">
+              <label>Unit Economics (if known)</label>
+              <textarea
+                id="fin-unit"
+                placeholder="e.g. CAC: $40, LTV: $200, Gross Margin: 65%, Churn: 5%"
+                rows="2"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Use of Raise</label>
+              <textarea
+                id="fin-use"
+                placeholder="e.g. 40% product, 35% sales & marketing, 25% ops"
+                rows="2"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Raise Amount & Target Year</label>
+              <input
+                type="text"
+                id="fin-raise"
+                placeholder="e.g. $2M Seed, projecting to 2027"
+              />
+            </div>
+            <div class="form-group">
+              <label>Key Growth Assumptions</label>
+              <textarea
+                id="fin-assumptions"
+                placeholder="e.g. 3x YoY growth, entering Nigeria in Year 2, launch B2B tier Q3..."
+                rows="3"
+              ></textarea>
+            </div>
+            <button
+              class="btn-primary generate-btn"
+              onclick="generate('financial')"
+              id="financial-btn"
+            >
+              <span>✨</span><span>Build Financial Narrative</span>
+            </button>
+          </div>
+          <div>
+            <div class="result-panel" id="financial-result">
+              <div class="result-placeholder">
+                <div class="result-placeholder-icon">📊</div>
+                <div class="result-placeholder-text">
+                  Enter your financials to generate a model narrative and
+                  structure
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODULE 5: Due Diligence Prep ── -->
+      <div class="module" id="mod-diligence">
+        <div class="module-header">
+          <div class="module-title">🔍 Due Diligence Prep</div>
+          <div class="module-subtitle">
+            Anticipate investor questions and prepare bulletproof answers across
+            legal, financial, impact, and operational diligence.
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-icon">⚙️</div>
+              Company Overview
+            </div>
+            <div class="form-group">
+              <label>Company & Business Description</label>
+              <textarea
+                id="dd-company"
+                placeholder="Brief overview of what you do, who you serve, and your model..."
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Funding Stage & Raise Size</label>
+              <input
+                type="text"
+                id="dd-stage"
+                placeholder="e.g. Series A — $5M"
+              />
+            </div>
+            <div class="form-group">
+              <label>Investor Type</label>
+              <select id="dd-invtype">
+                <option>Impact VC</option>
+                <option>DFI (Development Finance Institution)</option>
+                <option>Family Office</option>
+                <option>Foundation / Philanthropic</option>
+                <option>Corporate VC / Strategic</option>
+                <option>Government / Multilateral</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Diligence Areas to Prep</label>
+              <div class="chip-group">
+                <span
+                  class="chip selected"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Financial</span
+                >
+                <span
+                  class="chip selected"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Impact & ESG</span
+                >
+                <span
+                  class="chip selected"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Team & Governance</span
+                >
+                <span
+                  class="chip"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Legal & Compliance</span
+                >
+                <span
+                  class="chip"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Market & Competition</span
+                >
+                <span
+                  class="chip"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Technology & IP</span
+                >
+                <span
+                  class="chip"
+                  data-group="ddarea"
+                  onclick="toggleChip(this)"
+                  >Operations & Scale</span
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label
+                >Known Weaknesses / Risks
+                <span class="hint">optional</span></label
+              >
+              <textarea
+                id="dd-risks"
+                placeholder="Areas you're uncertain about or expect pushback on..."
+                rows="3"
+              ></textarea>
+            </div>
+            <button
+              class="btn-primary generate-btn"
+              onclick="generate('diligence')"
+              id="diligence-btn"
+            >
+              <span>✨</span><span>Generate DD Q&amp;A Prep</span>
+            </button>
+          </div>
+          <div>
+            <div class="result-panel" id="diligence-result">
+              <div class="result-placeholder">
+                <div class="result-placeholder-icon">🔍</div>
+                <div class="result-placeholder-text">
+                  Describe your company to get anticipated investor questions &
+                  model answers
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODULE 6: Pitch Narrative Builder ── -->
+      <div class="module" id="mod-pitch">
+        <div class="module-header">
+          <div class="module-title">🎯 Pitch Narrative Builder</div>
+          <div class="module-subtitle">
+            Craft a compelling fundraising story — from problem framing to the
+            ask — tailored to impact investors.
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-icon">⚙️</div>
+              Your Story
+            </div>
+            <div class="form-group">
+              <label>Company Name</label>
+              <input
+                type="text"
+                id="pitch-company"
+                placeholder="e.g. AquaFlow Technologies"
+              />
+            </div>
+            <div class="form-group">
+              <label>The Problem You Solve</label>
+              <textarea
+                id="pitch-problem"
+                placeholder="Describe the problem — the pain, who feels it, and the scale of it..."
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Your Solution</label>
+              <textarea
+                id="pitch-solution"
+                placeholder="What you've built and how it uniquely addresses the problem..."
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Traction & Proof Points</label>
+              <textarea
+                id="pitch-traction"
+                placeholder="Revenue, customers, partnerships, growth metrics, awards..."
+                rows="2"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Team Highlights</label>
+              <textarea
+                id="pitch-team"
+                placeholder="Founder backgrounds, relevant expertise, key hires..."
+                rows="2"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>The Ask</label>
+              <input
+                type="text"
+                id="pitch-ask"
+                placeholder="e.g. $3M Seed to expand into 3 new markets by 2026"
+              />
+            </div>
+            <div class="form-group">
+              <label>Narrative Style</label>
+              <div class="chip-group">
+                <span
+                  class="chip selected"
+                  data-group="narr"
+                  onclick="toggleChip(this, true)"
+                  >Story-driven</span
+                >
+                <span
+                  class="chip"
+                  data-group="narr"
+                  onclick="toggleChip(this, true)"
+                  >Data-driven</span
+                >
+                <span
+                  class="chip"
+                  data-group="narr"
+                  onclick="toggleChip(this, true)"
+                  >Mission-led</span
+                >
+                <span
+                  class="chip"
+                  data-group="narr"
+                  onclick="toggleChip(this, true)"
+                  >Market opportunity</span
+                >
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Output Format</label>
+              <select id="pitch-format">
+                <option>
+                  Full pitch narrative (slide-by-slide talking points)
+                </option>
+                <option>Executive summary (1-page)</option>
+                <option>Elevator pitch (60-second script)</option>
+                <option>Investor memo (structured)</option>
+              </select>
+            </div>
+            <button
+              class="btn-primary generate-btn"
+              onclick="generate('pitch')"
+              id="pitch-btn"
+            >
+              <span>✨</span><span>Build Pitch Narrative</span>
+            </button>
+          </div>
+          <div>
+            <div class="result-panel" id="pitch-result">
+              <div class="result-placeholder">
+                <div class="result-placeholder-icon">🎯</div>
+                <div class="result-placeholder-text">
+                  Share your story to generate a compelling pitch narrative
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // ─────────────────────────────────────────────────────────────
+      // STATE
+      // ─────────────────────────────────────────────────────────────
+      let appPassword = sessionStorage.getItem("appPassword") || "";
+      let activeTab = "sector";
+      let isGenerating = false;
+
+      // ─────────────────────────────────────────────────────────────
+      // INIT
+      // ─────────────────────────────────────────────────────────────
+      (function init() {
+        if (!appPassword) {
+          document.getElementById("apiModal").classList.remove("hidden");
+        } else {
+          updateStatus(true);
+        }
+      })();
+
+      // ─────────────────────────────────────────────────────────────
+      // PASSWORD AUTH
+      // ─────────────────────────────────────────────────────────────
+      async function saveApiKey() {
+        const val = document.getElementById("apiKeyInput").value.trim();
+        if (!val) {
+          showModalError("Please enter the access password.");
+          return;
+        }
+
+        // Verify password against backend
+        const btn = document.getElementById("loginBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<span>Verifying...</span>';
+
+        try {
+          const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-App-Password": val,
+            },
+            body: JSON.stringify({ prompt: "ping" }),
+          });
+
+          if (res.status === 401) {
+            showModalError("Incorrect password. Please try again.");
+            btn.disabled = false;
+            btn.innerHTML = '<span>Get Started</span><span>→</span>';
+            return;
+          }
+
+          // Any other response (even error) means password was accepted
+          appPassword = val;
+          sessionStorage.setItem("appPassword", appPassword);
+          document.getElementById("apiModal").classList.add("hidden");
+          updateStatus(true);
+        } catch (e) {
+          showModalError("Connection error. Please try again.");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Get Started</span><span>→</span>';
+        }
+      }
+
+      function showApiModal() {
+        // No-op: founders can't change the password from the UI
+      }
+
+      function showModalError(msg) {
+        const el = document.getElementById("modalError");
+        document.getElementById("modalErrorText").textContent = msg;
+        el.style.display = "flex";
+      }
+
+      function toggleKeyVisibility() {
+        const inp = document.getElementById("apiKeyInput");
+        inp.type = inp.type === "password" ? "text" : "password";
+      }
+
+      function updateStatus(connected) {
+        const dot = document.getElementById("statusDot");
+        const text = document.getElementById("statusText");
+        if (connected) {
+          dot.classList.add("connected");
+          text.textContent = "Connected";
+        } else {
+          dot.classList.remove("connected");
+          text.textContent = "Not Connected";
+        }
+      }
+
+      // Allow Enter key in modal
+      document
+        .getElementById("apiKeyInput")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") saveApiKey();
+        });
+
+      // ─────────────────────────────────────────────────────────────
+      // TAB NAVIGATION
+      // ─────────────────────────────────────────────────────────────
+      function switchTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".module")
+          .forEach((m) => m.classList.remove("active"));
+        document.querySelector(`[data-tab="${tab}"]`).classList.add("active");
+        document.getElementById(`mod-${tab}`).classList.add("active");
+        activeTab = tab;
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // CHIP TOGGLE
+      // ─────────────────────────────────────────────────────────────
+      function toggleChip(el, singleSelect = false) {
+        if (singleSelect) {
+          document
+            .querySelectorAll(`[data-group="${el.dataset.group}"]`)
+            .forEach((c) => c.classList.remove("selected"));
+          el.classList.add("selected");
+        } else {
+          el.classList.toggle("selected");
+        }
+      }
+
+      function getSelectedChips(group) {
+        return [
+          ...document.querySelectorAll(`[data-group="${group}"].selected`),
+        ]
+          .map((c) => c.textContent.trim())
+          .join(", ");
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // PROMPTS
+      // ─────────────────────────────────────────────────────────────
+      function buildPrompt(module) {
+        switch (module) {
+          case "sector": {
+            const name = document.getElementById("sector-name").value.trim();
+            const geo = document.getElementById("sector-geo").value;
+            const stage = document.getElementById("sector-stage").value;
+            const depth = getSelectedChips("depth");
+            const context = document
+              .getElementById("sector-context")
+              .value.trim();
+            if (!name) return { error: "Please enter a target sector." };
+            return {
+              prompt: `You are an expert impact investing analyst. Provide a comprehensive sector analysis report for an impact investor or startup founder.
+
+**Sector:** ${name}
+**Geography:** ${geo}
+**Market Stage:** ${stage}
+**Analysis Areas:** ${depth || "Market Size, Key Trends, Competitive Landscape"}
+${context ? `**Additional Context:** ${context}` : ""}
+
+Structure your analysis with clear headings covering: executive summary, market opportunity & sizing, key trends & tailwinds, major players & competitive landscape, investment thesis framing, key risks, and strategic recommendations for a founder fundraising in this space. Be specific with data, cite relevant organizations, and make it actionable. Format with markdown.`,
+            };
+          }
+
+          case "investor": {
+            const company = document.getElementById("inv-company").value.trim();
+            const desc = document.getElementById("inv-desc").value.trim();
+            const sector = document.getElementById("inv-sector").value.trim();
+            const stage = document.getElementById("inv-stage").value;
+            const raise = document.getElementById("inv-raise").value.trim();
+            const geo = document.getElementById("inv-geo").value.trim();
+            const impact = document.getElementById("inv-impact").value.trim();
+            const types = getSelectedChips("invtype");
+            if (!company || !desc)
+              return {
+                error: "Please enter your company name and description.",
+              };
+            return {
+              prompt: `You are an expert impact investing advisor with deep knowledge of the global impact investor landscape.
+
+A startup founder needs investor matching recommendations:
+
+**Company:** ${company}
+**Description:** ${desc}
+**Sector:** ${sector || "Not specified"}
+**Stage:** ${stage}
+**Raise Size:** ${raise || "Not specified"}
+**Geography:** ${geo || "Not specified"}
+**Impact / SDG:** ${impact || "Not specified"}
+**Preferred Investor Types:** ${types || "All types"}
+
+Provide a detailed list of 10-15 highly aligned impact investors. For each investor, include:
+1. **Fund/Organization Name** with a brief description
+2. **Why they're aligned** (specific portfolio companies, thesis fit, geography match)
+3. **Typical check size & stage**
+4. **Key contact approach** (warm intro tips, application process, what they look for)
+5. **Priority rating** (High / Medium / Low fit)
+
+Be specific with real fund names, partners, and portfolio examples. Format with markdown.`,
+            };
+          }
+
+          case "outreach": {
+            const sender = document.getElementById("out-sender").value.trim();
+            const investor = document
+              .getElementById("out-investor")
+              .value.trim();
+            const invContext = document
+              .getElementById("out-inv-context")
+              .value.trim();
+            const pitch = document.getElementById("out-pitch").value.trim();
+            const goal = document.getElementById("out-goal").value;
+            const tone = getSelectedChips("tone");
+            const format = getSelectedChips("format");
+            if (!sender || !investor || !pitch)
+              return {
+                error:
+                  "Please fill in your name, investor name, and company pitch.",
+              };
+            return {
+              prompt: `You are an expert at writing high-converting investor outreach for impact startups.
+
+**From:** ${sender}
+**To:** ${investor}
+**Investor Context:** ${invContext || "General impact investor"}
+**Company Pitch:** ${pitch}
+**Goal:** ${goal}
+**Tone:** ${tone || "Professional"}
+**Format:** ${format || "Email"}
+
+Write personalized, compelling outreach that:
+- Opens with a specific hook related to the investor's known work or portfolio
+- Concisely communicates the problem, solution, and traction
+- Makes a clear, low-friction ask
+- Feels human and genuine, not templated
+- Is appropriately concise (email: 150-200 words max; LinkedIn: 100 words max)
+
+${format === "Both" ? "Provide BOTH an email version and a LinkedIn message version." : ""}
+
+Include subject line for email. Make it stand out from the 100+ pitches they see weekly. Format with markdown.`,
+            };
+          }
+
+          case "financial": {
+            const model = document.getElementById("fin-model").value;
+            const revenue = document.getElementById("fin-revenue").value.trim();
+            const segments = document
+              .getElementById("fin-segments")
+              .value.trim();
+            const unit = document.getElementById("fin-unit").value.trim();
+            const useOf = document.getElementById("fin-use").value.trim();
+            const raise = document.getElementById("fin-raise").value.trim();
+            const assumptions = document
+              .getElementById("fin-assumptions")
+              .value.trim();
+            if (!revenue && !segments)
+              return {
+                error:
+                  "Please enter at least your revenue and customer segments.",
+              };
+            return {
+              prompt: `You are a startup CFO and financial model expert specializing in impact investing.
+
+Build a comprehensive financial model narrative and structure for this impact startup:
+
+**Business Model:** ${model}
+**Current Revenue:** ${revenue || "Pre-revenue"}
+**Customer Segments:** ${segments || "Not specified"}
+**Unit Economics:** ${unit || "To be determined"}
+**Use of Raise:** ${useOf || "Not specified"}
+**Raise & Timeline:** ${raise || "Not specified"}
+**Key Growth Assumptions:** ${assumptions || "Not specified"}
+
+Provide:
+1. **Financial Model Architecture** — what tabs/sheets to build and why
+2. **Key Assumptions Sheet** — template with the 15-20 most critical input assumptions
+3. **Revenue Model** — detailed breakdown by segment with pricing logic
+4. **Cost Structure** — OPEX and CAPEX framework
+5. **Headcount Plan** — hiring roadmap by function
+6. **3-Year P&L Outline** — narrative projection with key milestones
+7. **Investor Metrics Dashboard** — top 10 KPIs to track and present
+8. **Sensitivity Analysis** — 3 scenarios (bear/base/bull) with key variables
+
+Be specific, quantitative where possible, and investor-ready. Format with markdown.`,
+            };
+          }
+
+          case "diligence": {
+            const company = document.getElementById("dd-company").value.trim();
+            const stage = document.getElementById("dd-stage").value.trim();
+            const invtype = document.getElementById("dd-invtype").value;
+            const areas = getSelectedChips("ddarea");
+            const risks = document.getElementById("dd-risks").value.trim();
+            if (!company)
+              return { error: "Please enter your company description." };
+            return {
+              prompt: `You are a seasoned impact investor and due diligence expert who has evaluated 500+ deals.
+
+A founder is preparing for due diligence with a ${invtype}. Help them prepare comprehensive Q&A.
+
+**Company:** ${company}
+**Stage / Raise:** ${stage || "Not specified"}
+**Investor Type:** ${invtype}
+**Diligence Areas:** ${areas || "Financial, Impact, Team"}
+${risks ? `**Known Risks / Weak Areas:** ${risks}` : ""}
+
+For each diligence area requested, provide:
+1. **Top 8-10 questions this investor type will ask** (ranked by likelihood)
+2. **Model answer framework** — key points to cover in each response
+3. **Red flags to avoid** — common mistakes founders make
+4. **Supporting documents needed** — what to have in your data room
+
+For the known risks, provide specific reframing strategies and how to proactively address them.
+
+Make it realistic and specific to a ${invtype} conducting ${stage || "this stage"} diligence. Format with markdown.`,
+            };
+          }
+
+          case "pitch": {
+            const company = document
+              .getElementById("pitch-company")
+              .value.trim();
+            const problem = document
+              .getElementById("pitch-problem")
+              .value.trim();
+            const solution = document
+              .getElementById("pitch-solution")
+              .value.trim();
+            const traction = document
+              .getElementById("pitch-traction")
+              .value.trim();
+            const team = document.getElementById("pitch-team").value.trim();
+            const ask = document.getElementById("pitch-ask").value.trim();
+            const style = getSelectedChips("narr");
+            const format = document.getElementById("pitch-format").value;
+            if (!company || !problem || !solution)
+              return {
+                error: "Please fill in company name, problem, and solution.",
+              };
+            return {
+              prompt: `You are a world-class pitch coach and narrative strategist who has helped impact startups raise $500M+.
+
+Build a compelling fundraising narrative for an impact startup pitching to investors.
+
+**Company:** ${company}
+**Problem:** ${problem}
+**Solution:** ${solution}
+**Traction:** ${traction || "Early stage"}
+**Team:** ${team || "Founding team"}
+**The Ask:** ${ask || "Not specified"}
+**Narrative Style:** ${style || "Story-driven"}
+**Format Requested:** ${format}
+
+Create an investor-grade pitch narrative that:
+- Opens with an emotionally resonant hook (a specific human story or striking statistic)
+- Articulates the problem with urgency and scale
+- Positions the solution as the inevitable answer
+- Validates with traction and social proof
+- Frames the team as uniquely qualified to win
+- Paints a vivid picture of the future state
+- Makes a confident, specific ask with clear use of funds
+
+${format.includes("slide-by-slide") ? 'Structure as slide-by-slide talking points with headers for each slide (Problem, Solution, Market, Traction, Business Model, Team, Financials, Ask). For each slide, provide 3-5 bullet talking points and 1-2 potential "wow moments".' : ""}
+${format.includes("Executive summary") ? "Format as a structured 1-page executive summary investors can read in 2 minutes." : ""}
+${format.includes("Elevator pitch") ? "Write a punchy 60-second verbal script. Every word must earn its place." : ""}
+${format.includes("Investor memo") ? "Format as a structured investor memo with sections: Overview, Problem & Opportunity, Solution & Differentiation, Traction, Business Model, Team, Financials, The Ask." : ""}
+
+Be specific, compelling, and emotionally resonant. This should feel like a top 1% pitch. Format with markdown.`,
+            };
+          }
+
+          default:
+            return { error: "Unknown module." };
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // API CALL — routes through secure backend
+      // ─────────────────────────────────────────────────────────────
+      async function callAPI(prompt) {
+        const password = sessionStorage.getItem("appPassword");
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-App-Password": password,
+            },
+            body: JSON.stringify({ prompt }),
+          });
+
+          if (response.status === 401) {
+            sessionStorage.removeItem("appPassword");
+            appPassword = "";
+            updateStatus(false);
+            document.getElementById("apiModal").classList.remove("hidden");
+            return "Error: Session expired. Please log in again.";
+          }
+
+          if (response.status === 429) {
+            return "Error: Too many requests. Please wait a minute and try again.";
+          }
+
+          const data = await response.json();
+          if (data.error) return "Error: " + data.error;
+          return data.result;
+        } catch (e) {
+          return "Error: " + e.message;
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // GENERATE
+      // ─────────────────────────────────────────────────────────────
+      async function generate(module) {
+        if (!appPassword) {
+          document.getElementById("apiModal").classList.remove("hidden");
+          return;
+        }
+        if (isGenerating) return;
+
+        const { prompt, error } = buildPrompt(module);
+        if (error) {
+          showError(`${module}-result`, error);
+          return;
+        }
+
+        isGenerating = true;
+        const btn = document.getElementById(`${module}-btn`);
+        btn.disabled = true;
+        btn.innerHTML =
+          '<span class="spinner" style="width:18px;height:18px;border-width:2px"></span><span>Generating...</span>';
+
+        const resultEl = document.getElementById(`${module}-result`);
+        resultEl.classList.add("has-content");
+        resultEl.innerHTML = `
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <div class="loading-text">AI is thinking...</div>
+        <div class="loading-subtext">Generating your personalized analysis</div>
+      </div>`;
+
+        try {
+          const fullText = await callAPI(prompt);
+
+          if (
+            fullText.startsWith("Error:") ||
+            fullText.startsWith("Unexpected response:")
+          ) {
+            resultEl.innerHTML = "";
+            resultEl.classList.remove("has-content");
+            showError(`${module}-result`, fullText);
+            return;
+          }
+
+          resultEl.innerHTML = `
+        <div class="result-header">
+          <div class="result-label">AI Generated Result</div>
+          <div class="result-actions">
+            <button class="copy-btn" onclick="copyResult('${module}')">📋 Copy</button>
+            <button class="pdf-btn" onclick="downloadPDF('${module}')">⬇ PDF</button>
+          </div>
+        </div>
+        <div class="result-content" id="${module}-content"></div>`;
+
+          const contentEl = document.getElementById(`${module}-content`);
+          contentEl.innerHTML = renderMarkdown(fullText);
+          contentEl.dataset.raw = fullText;
+        } catch (err) {
+          resultEl.innerHTML = "";
+          resultEl.classList.remove("has-content");
+          showError(
+            `${module}-result`,
+            err.message ||
+              "Something went wrong. Please check your API key and try again.",
+          );
+        } finally {
+          isGenerating = false;
+          btn.disabled = false;
+          setButtonLabel(module, btn);
+        }
+      }
+
+      function setButtonLabel(module, btn) {
+        const labels = {
+          sector: "✨ Generate Sector Analysis",
+          investor: "✨ Find Matching Investors",
+          outreach: "✨ Draft Outreach Message",
+          financial: "✨ Build Financial Narrative",
+          diligence: "✨ Generate DD Q&A Prep",
+          pitch: "✨ Build Pitch Narrative",
+        };
+        btn.innerHTML = `<span>✨</span><span>${labels[module].replace("✨ ", "")}</span>`;
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // MARKDOWN RENDERER (lightweight)
+      // ─────────────────────────────────────────────────────────────
+      function renderMarkdown(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+          .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+          .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+          .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.+?)\*/g, "<em>$1</em>")
+          .replace(/`(.+?)`/g, "<code>$1</code>")
+          .replace(
+            /^---$/gm,
+            '<hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">',
+          )
+          .replace(
+            /^\d+\. (.+)$/gm,
+            '<li style="list-style-type:decimal">$1</li>',
+          )
+          .replace(/^[-*] (.+)$/gm, "<li>$1</li>")
+          .replace(/(<li[^>]*>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+          .replace(/\n\n/g, "</p><p>")
+          .replace(/\n/g, "<br>")
+          .replace(/^(?!<[hpulro])(.+)$/gm, "<p>$1</p>")
+          .replace(/<p><\/p>/g, "")
+          .replace(/<p>(<[hul])/g, "$1")
+          .replace(/(<\/[hul][^>]*>)<\/p>/g, "$1");
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // HELPERS
+      // ─────────────────────────────────────────────────────────────
+      function showError(containerId, msg) {
+        const el = document.getElementById(containerId);
+        const existing = el.querySelector(".error-banner");
+        if (existing) existing.remove();
+        const div = document.createElement("div");
+        div.className = "error-banner";
+        div.innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg><span>${msg}</span>`;
+        el.appendChild(div);
+      }
+
+      function copyResult(module) {
+        const contentEl = document.getElementById(`${module}-content`);
+        const raw = contentEl.dataset.raw || contentEl.innerText;
+        navigator.clipboard.writeText(raw).then(() => {
+          const btn = document.querySelector(`#${module}-result .copy-btn`);
+          btn.classList.add("copied");
+          btn.textContent = "✓ Copied!";
+          setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.textContent = "📋 Copy";
+          }, 2000);
+        });
+      }
+
+      function downloadPDF(module) {
+        const contentEl = document.getElementById(`${module}-content`);
+        if (!contentEl) return;
+        const titles = {
+          sector: 'Sector Analysis', investor: 'Investor Matching',
+          outreach: 'Outreach Drafting', financial: 'Financial Model',
+          diligence: 'Due Diligence Prep', pitch: 'Pitch Narrative'
+        };
+        const title = titles[module] || module;
+        const html = contentEl.innerHTML;
+        const win = window.open('', '_blank');
+        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Alsisar Impact Co-Pilot — ${title}</title>
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; max-width: 750px; margin: 40px auto; padding: 0 24px; color: #111; line-height: 1.75; }
+  .header { border-bottom: 2px solid #8d1812; padding-bottom: 16px; margin-bottom: 28px; }
+  .logo { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #8d1812; font-weight: 700; margin-bottom: 4px; }
+  h1 { font-size: 22px; margin: 0; color: #111; }
+  .date { font-size: 11px; color: #777; margin-top: 4px; }
+  h2, h3 { color: #8d1812; margin-top: 24px; }
+  code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+  ul, ol { padding-left: 20px; }
+  li { margin-bottom: 4px; }
+  p { margin: 10px 0; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+  @media print { body { margin: 20px; } }
+</style></head><body>
+<div class="header">
+  <div class="logo">Alsisar Impact Co-Pilot</div>
+  <h1>${title}</h1>
+  <div class="date">Generated ${new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'})}</div>
+</div>
+${html}
+</body></html>`);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { win.print(); }, 400);
+      }
+
+      // Close modal on overlay click
+      document
+        .getElementById("apiModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this && apiKey) this.classList.add("hidden");
+        });
+    </script>
+  </body>
+</html>
